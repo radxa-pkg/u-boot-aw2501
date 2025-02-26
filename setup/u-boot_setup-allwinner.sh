@@ -14,7 +14,7 @@ update_bootloader() {
 	local DEVICE=$1
 
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_sdcard_sun55iw3p1.bin" of="$DEVICE" bs=512 seek=256
-	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot_package.fex" of="$DEVICE" bs=512 seek=32800
+	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot_package.fex" of="$DEVICE" bs=512 seek=24576
 	sync "$DEVICE"
 }
 
