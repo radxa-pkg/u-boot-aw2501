@@ -19,3 +19,6 @@
 
 # Output folder
 /out
+
+# Symbolic link for Allwinner update_chip
+/monitor.fex

@@ -1,4 +1,4 @@
-u-boot-aw2501 (0.1.0-1) UNRELEASED; urgency=medium
+u-boot-aw2501 (2018.07-1) UNRELEASED; urgency=medium
 
   * Add initial Debian packaging support
 

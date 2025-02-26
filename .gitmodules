@@ -1,0 +1,23 @@
+[submodule "src"]
+	path = src
+	url = https://github.com/radxa/u-boot.git
+	branch = allwinner-aiot-v2018.07
+[submodule "device"]
+	path = device
+	url = https://github.com/radxa/allwinner-device.git
+	branch = device-a527
+[submodule "tools"]
+	path = tools
+	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/tools.git
+[submodule "arisc"]
+	path = arisc
+	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/arisc.git
+[submodule "dramlib"]
+	path = dramlib
+	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/dramlib.git
+[submodule "spl-pub"]
+	path = spl-pub
+	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/brandy-2.0/spl-pub.git
+[submodule "awbs"]
+	path = awbs
+	url = https://github.com/radxa/awbs.git

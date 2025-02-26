@@ -1,0 +1,106 @@
+CROSS_COMPILE := arm-linux-gnueabi-
+CUSTOM_MAKE_DEFINITIONS := DTS_PATH=arch/arm/dts \
+	LICHEE_CHIP_CONFIG_DIR=/tmp \
+	LICHEE_PLAT_OUT=/tmp \
+	TARGETDIR=/tmp \
+	EXTRA_CFLAGS="-Wno-attributes -Wno-array-bounds -Wno-address-of-packed-member -Wno-maybe-uninitialized -Wno-misleading-indentation"
+UBOOT_PRODUCTS := radxa-cubie-a5e
+CUSTOM_DEBUILD_ENV := DEB_BUILD_OPTIONS='parallel=1' DEB_CFLAGS_MAINT_SET= DEB_LDFLAGS_MAINT_SET= DEB_OBJCFLAGS_MAINT_SET=
+
+#
+# Common supporting targets
+#
+
+UBOOT_PACKING_COMPONENTS := src/u-boot-sun55iw3p1.bin \
+							src/u-boot.dtb \
+							device/bin/bl31.bin \
+							arisc/ar100s/scp.bin \
+							src/boot_package.cfg
+
+.PHONY: make_tmp_dir
+make_tmp_dir:
+	mkdir -p /tmp/bin
+
+pre_build: make_tmp_dir
+
+clean: clean_sunxi_challenge clean_scp clean_pack clean_spl
+distclean: distclean_spl
+
+.PHONY: clean_sunxi_challenge
+clean_sunxi_challenge:
+	rm -f src/board/sunxi/sunxi_challenge.c
+
+.PHONY: clean_board-uboot
+clean_board-uboot:
+	rm -f src/arch/arm/dts/.board-uboot.dts
+
+.PHONY: clean_scp
+clean_scp:
+	$(MAKE) -j$(shell nproc) -C arisc/ar100s clean
+
+.PHONY: clean_pack
+clean_pack:
+	rm -f src/bl31.bin src/scp.bin src/boot_package.cfg src/boot_package.fex
+
+.PHONY: clean_spl
+clean_spl:
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub clean
+	rm -f device/configs/cubie_a5e/sys_config.bin monitor.fex
+	dos2unix device/configs/cubie_a5e/sys_config.fex
+
+.PHONY: distclean_spl
+distclean_spl:
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub distclean
+
+arisc/ar100s/scp.bin:
+	LICHEE_BOARD_CONFIG_DIR=device/configs/cubie_a5e device/tools/arisc_config_parse.sh
+	ln -sf ../device/configs/cubie_a5e/arisc.config arisc/.config
+	$(MAKE) -j$(shell nproc) -C arisc LICHEE_DRAMLIB_PATH=../../dramlib CFG_CHIP_PLATFORM=sun55iw3p1
+
+src/boot_package.cfg:
+	echo "[package]" > $@
+	echo "item=u-boot, u-boot-sun55iw3p1.bin" >> $@
+	echo "item=monitor, bl31.bin" >> $@
+	echo "item=scp, scp.bin" >> $@
+	echo "item=dtb, u-boot.dtb" >> $@
+
+src/boot_package.fex: $(UBOOT_PACKING_COMPONENTS)
+	cp device/bin/bl31.bin arisc/ar100s/scp.bin ./src
+	cd ./src && ../tools/pack/pctools/linux/openssl/dragonsecboot -pack boot_package.cfg
+
+device/configs/cubie_a5e/sys_config.bin: device/configs/cubie_a5e/sys_config.fex
+	unix2dos $<
+	tools/pack/pctools/linux/mod_update/script $<
+
+spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a527
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device/bin/bl31.bin monitor.fex
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+.PHONY: a527_pack
+a527_pack: src/boot_package.fex
+
+#
+# Device build targets
+#
+
+.PHONY: radxa-cubie-a5e_defconfig
+radxa-cubie-a5e_defconfig: clean_config
+	$(UMAKE) sun55iw3p1_defconfig
+
+.PHONY: radxa-cubie-a5e_build
+radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
+	ln -sf ../../../../device/configs/cubie_a5e/uboot-board.dts src/arch/arm/dts/.board-uboot.dts
+	$(UMAKE) all
+
+.PHONY: radxa-cubie-a5e_pack
+radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
+
+.PHONY: radxa-cubie-a5e
+radxa-cubie-a5e: radxa-cubie-a5e_pack spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
+	mkdir -p out/$@
+	cp spl-pub/nboot/boot0_*_sun55iw3p1.bin src/boot_package.fex out/$@/
+	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
