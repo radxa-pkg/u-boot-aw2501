@@ -1,0 +1,43 @@
+Source: u-boot-aw2501
+Maintainer: "Radxa Computer Co., Ltd" <dev@radxa.com>
+Section: admin
+Priority: standard
+Standards-Version: 4.6.0
+Build-Depends: debhelper (>=12~),
+               devscripts,
+               lintian,
+               dh-exec,
+               flex,
+               bison,
+               python3-setuptools,
+               swig,
+               python3-dev,
+               libgnutls28-dev,
+               python3-pyelftools,
+               libncurses-dev,
+               crossbuild-essential-arm64 [!arm64],
+               crossbuild-essential-armhf [!armhf],
+               crossbuild-essential-armel [!armel],
+               xxd,
+               bc,
+               lib32stdc++6 [!i386],
+               lib32z1 [!i386],
+               dos2unix,
+
+Package: u-boot-aw2501
+Architecture: all
+Section: admin
+Priority: optional
+Depends: ${misc:Depends},
+Description: U-Boot based on aw2501
+ This package provides the prebuilt U-Boot based on aw2501.
+
+Package: u-boot-product
+Architecture: all
+Depends: u-boot-aw2501,
+         ${misc:Depends},
+Section: admin
+Priority: optional
+Description: Radxa U-Boot meta-package for new product.
+ This package provides the prebuilt U-Boot for new product.
+
