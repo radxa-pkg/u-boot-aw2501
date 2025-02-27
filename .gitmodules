@@ -8,16 +8,16 @@
 	branch = device-a527
 [submodule "tools"]
 	path = tools
-	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/tools.git
+	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/tools.git
 [submodule "arisc"]
 	path = arisc
-	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/arisc.git
+	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/arisc.git
 [submodule "dramlib"]
 	path = dramlib
-	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/dramlib.git
+	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/dramlib.git
 [submodule "spl-pub"]
 	path = spl-pub
-	url = http://gitlab.vamrs.org/t527_tina5.0_aiot/lichee/brandy-2.0/spl-pub.git
+	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/brandy-2.0/spl-pub.git
 [submodule "awbs"]
 	path = awbs
 	url = https://github.com/radxa/awbs.git
