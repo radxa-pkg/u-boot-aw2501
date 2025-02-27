@@ -24,4 +24,4 @@
 /monitor.fex
 
 # Build intermediate files
-/fes1.lds
+/*.lds
