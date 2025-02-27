@@ -1,5 +1,10 @@
 u-boot-aw2501 (2018.07-1) UNRELEASED; urgency=medium
 
   * Add initial Debian packaging support
+  * fix: ignore intermediate files
+  * fix: install U-Boot proper to UBOOT_BACKUP_START_SECTOR_IN_SDMMC
+  * chore: switch to public git repos
+  * fix: update arisc's commit
+  * fix: ignore warnings reported by GitHub Action's gcc
 
- -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Thu, 01 Jan 1970 08:00:00 +0800
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Thu, 27 Feb 2025 14:39:28 +0800
