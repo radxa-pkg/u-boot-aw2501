@@ -3,7 +3,12 @@ CUSTOM_MAKE_DEFINITIONS := DTS_PATH=arch/arm/dts \
 	LICHEE_CHIP_CONFIG_DIR=/tmp \
 	LICHEE_PLAT_OUT=/tmp \
 	TARGETDIR=/tmp \
-	EXTRA_CFLAGS="-Wno-attributes -Wno-array-bounds -Wno-address-of-packed-member -Wno-maybe-uninitialized -Wno-misleading-indentation"
+	EXTRA_CFLAGS="-Wno-attributes \
+				  -Wno-array-bounds \
+				  -Wno-address-of-packed-member \
+				  -Wno-maybe-uninitialized \
+				  -Wno-enum-int-mismatch \
+				  -Wno-misleading-indentation"
 UBOOT_PRODUCTS := radxa-cubie-a5e
 CUSTOM_DEBUILD_ENV := DEB_BUILD_OPTIONS='parallel=1' DEB_CFLAGS_MAINT_SET= DEB_LDFLAGS_MAINT_SET= DEB_OBJCFLAGS_MAINT_SET=
 
