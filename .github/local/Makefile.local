@@ -35,10 +35,6 @@ distclean: distclean_spl
 clean_sunxi_challenge:
 	rm -f src/board/sunxi/sunxi_challenge.c
 
-.PHONY: clean_board-uboot
-clean_board-uboot:
-	rm -f src/arch/arm/dts/.board-uboot.dts
-
 .PHONY: clean_scp
 clean_scp:
 	$(MAKE) -j$(shell nproc) -C arisc/ar100s clean
@@ -98,8 +94,7 @@ radxa-cubie-a5e_defconfig: clean_config
 
 .PHONY: radxa-cubie-a5e_build
 radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
-	ln -sf ../../../../device/configs/cubie_a5e/uboot-board.dts src/arch/arm/dts/.board-uboot.dts
-	$(UMAKE) all
+	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device/configs/cubie_a5e all
 
 .PHONY: radxa-cubie-a5e_pack
 radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
