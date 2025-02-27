@@ -76,4 +76,4 @@ deb: debian
 
 .PHONY: release
 release:
-	gh workflow run .github/workflows/new_version.yml --ref $(shell git branch --show-current)
+	gh workflow run .github/workflows/new_version.yaml --ref $(shell git branch --show-current)

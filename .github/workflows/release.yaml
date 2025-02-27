@@ -23,12 +23,12 @@ jobs:
         git branch -D main || true
         git switch -c main || true
         make dch
-        make test all deb
+        make test deb
         git reset --hard HEAD~1
       shell: "bash"
     - name: "Build"
       run: |
-        make all deb
+        make deb
       shell: "bash"
     - id: "artifacts_path"
       name: "Workaround actions/upload-artifact#176"
