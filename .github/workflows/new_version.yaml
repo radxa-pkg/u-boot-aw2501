@@ -10,6 +10,10 @@ jobs:
         fetch-depth: 0
         submodules: "recursive"
         token: "${{secrets.GIT_PUSH_TOKEN}}"
+    - name: "Enable Multiarch"
+      uses: "ryankurte/action-apt@master"
+      with:
+        arch: "arm64"
     - name: "Create release commit"
       run: |
         sudo apt-get update
@@ -22,7 +26,7 @@ jobs:
       shell: "bash"
     - name: "Test"
       run: |
-        sudo apt-get build-dep --no-install-recommends -y .
+        make devcontainer_setup
         make test deb
       shell: "bash"
     - name: "Test"
