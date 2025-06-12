@@ -38,6 +38,6 @@ Depends: u-boot-aw2501,
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for Radxa Cubit A5E.
- This package provides the prebuilt U-Boot for Radxa Cubit A5E.
+Description: Radxa U-Boot meta-package for Radxa Cubie A5E.
+ This package provides the prebuilt U-Boot for Radxa Cubie A5E.
 
