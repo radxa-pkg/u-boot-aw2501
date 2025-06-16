@@ -26,7 +26,10 @@ UBOOT_PACKING_COMPONENTS := src/u-boot-sun55iw3p1.bin \
 make_tmp_dir:
 	mkdir -p /tmp/bin
 
-pre_build: make_tmp_dir
+src/arch/arm/dts/sun55i-a527-radxa-a5e.dts:
+	ln -s sun55iw3p1-soc-system.dts $@
+
+pre_build: make_tmp_dir src/arch/arm/dts/sun55i-a527-radxa-a5e.dts
 
 clean: clean_sunxi_challenge clean_scp clean_pack clean_spl
 distclean: distclean_spl
