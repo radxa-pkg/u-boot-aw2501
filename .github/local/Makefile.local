@@ -93,7 +93,7 @@ a527_pack: src/boot_package.fex
 
 .PHONY: radxa-cubie-a5e_defconfig
 radxa-cubie-a5e_defconfig: clean_config
-	$(UMAKE) sun55iw3p1_defconfig
+	$(UMAKE) sun55iw3p1_defconfig radxa.config
 
 .PHONY: radxa-cubie-a5e_build
 radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
