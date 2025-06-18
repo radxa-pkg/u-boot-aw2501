@@ -10,30 +10,34 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
         submodules: "recursive"
-    - name: "Enable Multiarch"
-      uses: "ryankurte/action-apt@master"
+    - name: "Set up QEMU Emulation"
+      uses: "docker/setup-qemu-action@v3"
       with:
-        arch: "arm64"
+        image: "tonistiigi/binfmt:latest"
     - name: "Test"
-      run: |
-        sudo apt-get update
-        sudo apt-get install --no-install-recommends -y git-buildpackage
-        export DEBEMAIL="dev@radxa.com"
-        export DEBFULLNAME='"Radxa Computer Co., Ltd"'
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git branch -m GITHUB_RUNNER || true
-        git branch -D main || true
-        git switch -c main || true
-        make dch
-        make devcontainer_setup
-        make test deb
-        git reset --hard HEAD~1
-      shell: "bash"
+      uses: "devcontainers/ci@v0.3"
+      with:
+        push: "never"
+        runCmd: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y git-buildpackage
+          export DEBEMAIL="dev@radxa.com"
+          export DEBFULLNAME='"Radxa Computer Co., Ltd"'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git branch -m GITHUB_RUNNER || true
+          git branch -D main || true
+          git switch -c main || true
+          make dch
+          make test deb
+          git reset --hard HEAD~1
+          rm ../*.deb
     - name: "Build"
-      run: |
-        make deb
-      shell: "bash"
+      uses: "devcontainers/ci@v0.3"
+      with:
+        push: "never"
+        runCmd: |
+          make deb
     - id: "artifacts_path"
       name: "Workaround actions/upload-artifact#176"
       run: |
@@ -110,7 +114,7 @@ jobs:
           ${{ env.changes }}
         tag_name: "${{ env.version }}"
     - name: "Update Test repos"
-      uses: "radxa-repo/update-repo-action@main"
+      uses: "RadxaOS-SDK/rsdk/.github/actions/infra-repo-update@main"
       with:
         test-repo: true
         token: "${{ secrets.RADXA_APT_TEST_REPO_TOKEN }}"
