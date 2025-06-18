@@ -1,5 +1,6 @@
-u-boot-aw2501 (2018.07-1) UNRELEASED; urgency=medium
+u-boot-aw2501 (2018.07-1) unstable; urgency=medium
 
+  [ "Radxa Computer Co., Ltd" ]
   * Add initial Debian packaging support
   * fix: ignore intermediate files
   * fix: install U-Boot proper to UBOOT_BACKUP_START_SECTOR_IN_SDMMC
@@ -7,4 +8,14 @@ u-boot-aw2501 (2018.07-1) UNRELEASED; urgency=medium
   * fix: update arisc's commit
   * fix: ignore warnings reported by GitHub Action's gcc
 
- -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Thu, 27 Feb 2025 14:39:28 +0800
+  [ ZHANG Yuntian ]
+  * fix: ignore additioal lds files
+  * fix: set Tina native device tree location
+  * chore: update device submodule
+  * fix: correct typos
+  * fix: link device tree to upstream path
+  * feat: support distro boot
+  * feat: add custom configs
+  * chore: update devenv.lock
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Wed, 18 Jun 2025 09:53:23 +0000
