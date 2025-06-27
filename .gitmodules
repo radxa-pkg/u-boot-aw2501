@@ -5,19 +5,23 @@
 [submodule "device"]
 	path = device
 	url = https://github.com/radxa/allwinner-device.git
-	branch = device-a527
+	branch = device-a527-v1.4.6
 [submodule "tools"]
 	path = tools
-	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/tools.git
+	url = https://gitlab.com/tina5.0_aiot/lichee/tools.git
+	branch = product-aiot-stable
 [submodule "arisc"]
 	path = arisc
-	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/arisc.git
+	url = https://gitlab.com/tina5.0_aiot/lichee/arisc.git
+	branch = product-aiot-stable
 [submodule "dramlib"]
 	path = dramlib
-	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/dramlib.git
+	url = https://gitlab.com/tina5.0_aiot/lichee/dramlib.git
+	branch = product-aiot-stable
 [submodule "spl-pub"]
 	path = spl-pub
-	url = https://gitlab.com/t527_tina5.0_aiot_sdk/lichee/brandy-2.0/spl-pub.git
+	url = https://gitlab.com/tina5.0_aiot/lichee/brandy-2.0/spl-pub.git
+	branch = product-aiot-stable
 [submodule "awbs"]
 	path = awbs
 	url = https://github.com/radxa/awbs.git

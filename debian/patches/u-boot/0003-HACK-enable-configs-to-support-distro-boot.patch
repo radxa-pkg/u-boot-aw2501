@@ -4,8 +4,8 @@ Date: Mon, 16 Jun 2025 09:08:49 +0000
 Subject: [PATCH] HACK: enable configs to support distro boot
 
 ---
- src/configs/radxa.config | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ src/configs/radxa.config | 3 +++
+ 1 file changed, 3 insertions(+)
  create mode 100644 src/configs/radxa.config
 
 diff --git a/src/configs/radxa.config b/src/configs/radxa.config
@@ -13,25 +13,10 @@ new file mode 100644
 index 00000000000..a6c877f859d
 --- /dev/null
 +++ b/src/configs/radxa.config
-@@ -0,0 +1,18 @@
-+# CONFIG_SUNXI_UPDATE_GPT=n
-+
-+CONFIG_DISTRO_DEFAULTS=y
-+CONFIG_CMD_NET=y
-+
-+CONFIG_USE_PREBOOT=y
-+CONFIG_PREBOOT="mmcinfo"
-+
-+# CONFIG_ENV_IS_NOWHERE=y
-+# CONFIG_ENV_IS_IN_SUNXI_FLASH=n
+@@ -0,0 +1,3 @@
++CONFIG_SUNXI_UPDATE_GPT=n
 +
 +CONFIG_DEFAULT_DEVICE_TREE="sun55i-a527-radxa-a5e"
-+
-+CONFIG_USB=y
-+CONFIG_USB_STORAGE=y
-+CONFIG_CMD_USB=y
-+CONFIG_USB_OHCI_NEW=y
-+CONFIG_USB_EHCI_HCD=y
 -- 
 2.49.0
 

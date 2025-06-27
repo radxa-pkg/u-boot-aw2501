@@ -5,19 +5,21 @@ Subject: [PATCH] fix: disable Allwinner cross toolchain
 
 Signed-off-by: ZHANG Yuntian <yt@radxa.com>
 ---
- src/Makefile | 39 ---------------------------------------
- 1 file changed, 39 deletions(-)
+ src/Makefile | 44 --------------------------------------------
+ 1 file changed, 44 deletions(-)
 
 diff --git a/src/Makefile b/src/Makefile
 index eca6c91aab7..4755175baa8 100755
 --- a/src/Makefile
 +++ b/src/Makefile
-@@ -267,45 +267,6 @@ ifeq (x$(config_check), xyes)
+@@ -271,50 +271,6 @@ ifeq (x$(config_check), xyes)
  endif
  endif
  
 -#########################################################################
--ifeq (x$(CONFIG_ARCH_RV32I), xy)
+-ifeq (x$(CONFIG_CPU_E90X), xy)
+-RISCV_PATH=Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.8.1
+-else ifeq (x$(CONFIG_ARCH_RV32I), xy)
 -RISCV_PATH=nds32le-linux-glibc-v5d
 -else
 -RISCV_PATH=riscv64-linux-x86_64-20200528
@@ -38,7 +40,10 @@ index eca6c91aab7..4755175baa8 100755
 -
 -
 -ifeq (x$(CONFIG_RISCV), xy)
--ifeq (x$(CONFIG_ARCH_RV32I), xy)
+-ifeq (x$(CONFIG_CPU_E90X), xy)
+-CROSS_COMPILE=$(srctree)/../tools/toolchain/$(RISCV_PATH)/bin/riscv64-unknown-linux-gnu-
+-DTS_PATH := $(PWD)/arch/riscv/dts
+-else ifeq (x$(CONFIG_ARCH_RV32I), xy)
 -CROSS_COMPILE := $(srctree)/../tools/toolchain/$(RISCV_PATH)/bin/riscv32-unknown-linux-
 -DTS_PATH := $(PWD)/arch/riscv/dts
 -else

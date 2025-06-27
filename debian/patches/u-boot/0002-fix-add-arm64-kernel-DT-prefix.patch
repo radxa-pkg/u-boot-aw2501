@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ZHANG Yuntian <yt@radxa.com>
+Date: Fri, 27 Jun 2025 07:53:34 +0000
+Subject: [PATCH] fix: add arm64 kernel DT prefix
+
+---
+ src/include/configs/sunxi-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/include/configs/sunxi-common.h b/src/include/configs/sunxi-common.h
+index eec99747b77..be1f91ca8c2 100644
+--- a/src/include/configs/sunxi-common.h
++++ b/src/include/configs/sunxi-common.h
+@@ -434,7 +434,7 @@
+ #ifdef CONFIG_ARM64
+ #define FDTFILE "allwinner/" CONFIG_DEFAULT_DEVICE_TREE ".dtb"
+ #else
+-#define FDTFILE CONFIG_DEFAULT_DEVICE_TREE ".dtb"
++#define FDTFILE "allwinner/" CONFIG_DEFAULT_DEVICE_TREE ".dtb"
+ #endif
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-- 
+2.49.0
+
