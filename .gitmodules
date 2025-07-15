@@ -1,7 +1,7 @@
 [submodule "src"]
 	path = src
 	url = https://github.com/radxa/u-boot.git
-	branch = allwinner-aiot-v2018.07
+	branch = cubie-aiot-v1.4.6
 [submodule "device"]
 	path = device
 	url = https://github.com/radxa/allwinner-device.git
