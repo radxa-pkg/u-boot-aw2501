@@ -76,6 +76,11 @@ device/configs/cubie_a5e/sys_config.bin: device/configs/cubie_a5e/sys_config.fex
 	unix2dos $<
 	tools/pack/pctools/linux/mod_update/script $<
 
+device/bin/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+	echo "Using Allwinner prebuilt"
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device/bin/bl31.bin monitor.fex
+
 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a527
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
@@ -103,7 +108,7 @@ radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
 radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
 
 .PHONY: radxa-cubie-a5e
-radxa-cubie-a5e: radxa-cubie-a5e_pack spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
+radxa-cubie-a5e: radxa-cubie-a5e_pack device/bin/boot0_sdcard_sun55iw3p1.bin
 	mkdir -p out/$@
-	cp spl-pub/nboot/boot0_*_sun55iw3p1.bin src/boot_package.fex out/$@/
+	cp device/bin/boot0_*_sun55iw3p1.bin src/boot_package.fex out/$@/
 	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
