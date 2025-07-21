@@ -85,13 +85,29 @@ out/radxa-cubie-a5e/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_co
 	cp device/bin/boot0_sdcard_sun55iw3p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
 
-spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+out/radxa-cubie-a5e/boot0_spinor_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+	mkdir -p out/radxa-cubie-a5e
+	cp device/bin/boot0_spinor_sun55iw3p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
+
+spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin spl-pub/nboot/boot0_spinor_sun55iw3p1.bin &: device/configs/cubie_a5e/sys_config.bin
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a527
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
-	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin $< SDMMC_CARD
+	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_spinor_sun55iw3p1.bin $< SPINOR_FLASH
 	ln -sf device/bin/bl31.bin monitor.fex
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
-	tools/pack/pctools/linux/mod_update/update_chip $@
+	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_spinor_sun55iw3p1.bin
+
+# Placeholder to suppress boot warnings
+# Does not work with `env save`
+out/radxa-cubie-a5e/sys_partition_nor.bin:
+	mkdir -p out/radxa-cubie-a5e
+	truncate -s 16M /tmp/gpt.img
+	sgdisk -o -n 1:-128K:0 -c 1:env /tmp/gpt.img
+	dd conv=notrunc,fsync if=/tmp/gpt.img of=$@ bs=512 count=34
 
 .PHONY: a527_pack
 a527_pack: src/boot_package.fex
@@ -112,6 +128,9 @@ radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
 radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
 
 .PHONY: radxa-cubie-a5e
-radxa-cubie-a5e: radxa-cubie-a5e_pack out/radxa-cubie-a5e/boot0_sdcard_sun55iw3p1.bin
+radxa-cubie-a5e: radxa-cubie-a5e_pack \
+				 out/radxa-cubie-a5e/boot0_sdcard_sun55iw3p1.bin \
+				 out/radxa-cubie-a5e/boot0_spinor_sun55iw3p1.bin \
+				 out/radxa-cubie-a5e/sys_partition_nor.bin
 	cp src/boot_package.fex out/$@/
 	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
