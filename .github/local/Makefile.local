@@ -31,7 +31,7 @@ src/arch/arm/dts/sun55i-a527-cubie-a5e.dts:
 
 pre_build: make_tmp_dir src/arch/arm/dts/sun55i-a527-cubie-a5e.dts
 
-clean: clean_sunxi_challenge clean_scp clean_pack clean_spl
+clean: clean_sunxi_challenge clean_scp clean_pack clean_spl clean_out
 distclean: distclean_spl
 
 .PHONY: clean_sunxi_challenge
@@ -51,6 +51,10 @@ clean_spl:
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub clean
 	rm -f device/configs/cubie_a5e/sys_config.bin monitor.fex
 	dos2unix device/configs/cubie_a5e/sys_config.fex
+
+.PHONY: clean_spl
+clean_out:
+	rm -rf out/
 
 .PHONY: distclean_spl
 distclean_spl:
