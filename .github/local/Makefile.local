@@ -134,3 +134,4 @@ radxa-cubie-a5e: radxa-cubie-a5e_pack \
 				 out/radxa-cubie-a5e/sys_partition_nor.bin
 	cp src/boot_package.fex out/$@/
 	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1

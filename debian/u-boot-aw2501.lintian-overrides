@@ -1,2 +1,5 @@
 # We do not track this on GitHub
 u-boot-aw2501: initial-upload-closes-no-bugs
+
+# PowerShell script is for Windows usage
+u-boot-aw2501: unusual-interpreter
