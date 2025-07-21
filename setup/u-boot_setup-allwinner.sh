@@ -13,7 +13,7 @@ fi
 build_spinor() {
 	rm -f /tmp/spi.img /tmp/gpt.img
 	truncate -s 16M /tmp/spi.img
-	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_spinor_sun55iw3p1.bin" of=/tmp/spi.img bs=512
+	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_spinor_*.bin" of=/tmp/spi.img bs=512
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot_package.fex" of=/tmp/spi.img bs=512 seek=128
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/sys_partition_nor.bin" of=/tmp/spi.img bs=512 seek=2016
 }
@@ -21,7 +21,7 @@ build_spinor() {
 update_bootloader() {
 	local DEVICE=$1
 
-	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_sdcard_sun55iw3p1.bin" of="$DEVICE" bs=512 seek=256
+	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_sdcard_*.bin" of="$DEVICE" bs=512 seek=256
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot_package.fex" of="$DEVICE" bs=512 seek=24576
 	sync "$DEVICE"
 }

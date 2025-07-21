@@ -13,7 +13,8 @@ Function BuildSPINOR{
 
     Write-Host "Warning: GPT partitioning is currently unimplemented."
 
-	$input = [FileStream]::new("$PSScriptRoot/boot0_spinor_sun55iw3p1.bin", [FileMode]::Open, [FileAccess]::Read)
+    $boot0 = [Directory]::GetFiles($PSScriptRoot, "boot0_spinor_*.bin");
+	$input = [FileStream]::new($boot0[0], [FileMode]::Open, [FileAccess]::Read)
 	$output.Seek(0, [SeekOrigin]::Begin)
 	$input.CopyTo($output)
 	$input.Close()

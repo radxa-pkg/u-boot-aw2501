@@ -2,8 +2,8 @@
 	path = src
 	url = https://github.com/radxa/u-boot.git
 	branch = cubie-aiot-v1.4.6
-[submodule "device"]
-	path = device
+[submodule "device-a527"]
+	path = device-a527
 	url = https://github.com/radxa/allwinner-device.git
 	branch = device-a527-v1.4.6
 [submodule "tools"]
@@ -25,3 +25,7 @@
 [submodule "awbs"]
 	path = awbs
 	url = https://github.com/radxa/awbs.git
+[submodule "device-a733"]
+	path = device-a733
+	url = https://github.com/radxa/allwinner-device.git
+	branch = device-a733-v1.4.6

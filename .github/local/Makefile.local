@@ -18,7 +18,7 @@ CUSTOM_DEBUILD_ENV := DEB_BUILD_OPTIONS='parallel=1' DEB_CFLAGS_MAINT_SET= DEB_L
 
 UBOOT_PACKING_COMPONENTS := src/u-boot-sun55iw3p1.bin \
 							src/u-boot.dtb \
-							device/bin/bl31.bin \
+							device-a527/bin/bl31.bin \
 							arisc/ar100s/scp.bin \
 							src/boot_package.cfg
 
@@ -49,8 +49,8 @@ clean_pack:
 .PHONY: clean_spl
 clean_spl:
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub clean
-	rm -f device/configs/cubie_a5e/sys_config.bin monitor.fex
-	dos2unix device/configs/cubie_a5e/sys_config.fex
+	rm -f device-a527/configs/cubie_a5e/sys_config.bin monitor.fex
+	dos2unix device-a527/configs/cubie_a5e/sys_config.fex
 
 .PHONY: clean_spl
 clean_out:
@@ -61,8 +61,8 @@ distclean_spl:
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub distclean
 
 arisc/ar100s/scp.bin:
-	LICHEE_BOARD_CONFIG_DIR=device/configs/cubie_a5e device/tools/arisc_config_parse.sh
-	ln -sf ../device/configs/cubie_a5e/arisc.config arisc/.config
+	LICHEE_BOARD_CONFIG_DIR=device-a527/configs/cubie_a5e device-a527/tools/arisc_config_parse.sh
+	ln -sf ../device-a527/configs/cubie_a5e/arisc.config arisc/.config
 	$(MAKE) -j$(shell nproc) -C arisc LICHEE_DRAMLIB_PATH=../../dramlib CFG_CHIP_PLATFORM=sun55iw3p1
 
 src/boot_package.cfg:
@@ -73,29 +73,29 @@ src/boot_package.cfg:
 	echo "item=dtb, u-boot.dtb" >> $@
 
 src/boot_package.fex: $(UBOOT_PACKING_COMPONENTS)
-	cp device/bin/bl31.bin arisc/ar100s/scp.bin ./src
+	cp device-a527/bin/bl31.bin arisc/ar100s/scp.bin ./src
 	cd ./src && ../tools/pack/pctools/linux/openssl/dragonsecboot -pack boot_package.cfg
 
-device/configs/cubie_a5e/sys_config.bin: device/configs/cubie_a5e/sys_config.fex
+device-a527/configs/cubie_a5e/sys_config.bin: device-a527/configs/cubie_a5e/sys_config.fex
 	unix2dos $<
 	tools/pack/pctools/linux/mod_update/script $<
 
-out/radxa-cubie-a5e/boot0_sdcard_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+out/radxa-cubie-a5e/boot0_sdcard_sun55iw3p1.bin: device-a527/configs/cubie_a5e/sys_config.bin
 	mkdir -p out/radxa-cubie-a5e
-	cp device/bin/boot0_sdcard_sun55iw3p1.bin $@
+	cp device-a527/bin/boot0_sdcard_sun55iw3p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
 
-out/radxa-cubie-a5e/boot0_spinor_sun55iw3p1.bin: device/configs/cubie_a5e/sys_config.bin
+out/radxa-cubie-a5e/boot0_spinor_sun55iw3p1.bin: device-a527/configs/cubie_a5e/sys_config.bin
 	mkdir -p out/radxa-cubie-a5e
-	cp device/bin/boot0_spinor_sun55iw3p1.bin $@
+	cp device-a527/bin/boot0_spinor_sun55iw3p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
 
-spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin spl-pub/nboot/boot0_spinor_sun55iw3p1.bin &: device/configs/cubie_a5e/sys_config.bin
+spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin spl-pub/nboot/boot0_spinor_sun55iw3p1.bin &: device-a527/configs/cubie_a5e/sys_config.bin
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a527
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin $< SDMMC_CARD
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_spinor_sun55iw3p1.bin $< SPINOR_FLASH
-	ln -sf device/bin/bl31.bin monitor.fex
+	ln -sf device-a527/bin/bl31.bin monitor.fex
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
@@ -122,7 +122,7 @@ radxa-cubie-a5e_defconfig: clean_config
 
 .PHONY: radxa-cubie-a5e_build
 radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
-	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device/configs/cubie_a5e all
+	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device-a527/configs/cubie_a5e all
 
 .PHONY: radxa-cubie-a5e_pack
 radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
