@@ -96,9 +96,9 @@ spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin spl-pub/nboot/boot0_spinor_sun55iw3p1.
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin $< SDMMC_CARD
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_spinor_sun55iw3p1.bin $< SPINOR_FLASH
 	ln -sf device-a527/bin/bl31.bin monitor.fex
-	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a527 LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
-	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a527 LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_spinor_sun55iw3p1.bin
 
 # Placeholder to suppress boot warnings
