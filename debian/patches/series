@@ -1,4 +1,1 @@
 u-boot/0001-fix-disable-Allwinner-cross-toolchain.patch
-u-boot/0002-fix-add-arm64-kernel-DT-prefix.patch
-u-boot/0003-HACK-enable-configs-to-support-distro-boot.patch
-u-boot/0004-HACK-fix-compiler-build-error.patch

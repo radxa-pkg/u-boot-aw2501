@@ -1,4 +1,4 @@
-CROSS_COMPILE := arm-linux-gnueabi-
+CROSS_COMPILE := ../gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-
 CUSTOM_MAKE_DEFINITIONS := DTS_PATH=arch/arm/dts \
 	LICHEE_CHIP_CONFIG_DIR=/tmp \
 	LICHEE_PLAT_OUT=/tmp \
@@ -9,27 +9,31 @@ CUSTOM_MAKE_DEFINITIONS := DTS_PATH=arch/arm/dts \
 				  -Wno-maybe-uninitialized \
 				  -Wno-enum-int-mismatch \
 				  -Wno-misleading-indentation"
-UBOOT_PRODUCTS := radxa-cubie-a5e
 CUSTOM_DEBUILD_ENV := DEB_BUILD_OPTIONS='parallel=1' DEB_CFLAGS_MAINT_SET= DEB_LDFLAGS_MAINT_SET= DEB_OBJCFLAGS_MAINT_SET=
+
+UBOOT_PRODUCTS := radxa-cubie-a5e \
+				  radxa-cubie-a7a \
+				  radxa-cubie-a7z
+
+devcontainer_setup: download_toolchain
+
+.PHONY: download_toolchain
+download_toolchain:
+	mkdir -p arisc/ar100s/tools/riscv64-elf-x86_64-20201104
+	wget "https://github.com/radxa/allwinner-toolchain/releases/download/aiot-linux-v1.4.6/riscv64-elf-x86_64-20201104.tar.gz"
+	tar xavf riscv64-elf-x86_64-20201104.tar.gz -C arisc/ar100s/tools/riscv64-elf-x86_64-20201104
+	wget "https://github.com/radxa/allwinner-toolchain/releases/download/aiot-linux-v1.4.6/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz"
+	tar xavf gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
 
 #
 # Common supporting targets
 #
 
-UBOOT_PACKING_COMPONENTS := src/u-boot-sun55iw3p1.bin \
-							src/u-boot.dtb \
-							device-a527/bin/bl31.bin \
-							arisc/ar100s/scp.bin \
-							src/boot_package.cfg
-
 .PHONY: make_tmp_dir
 make_tmp_dir:
 	mkdir -p /tmp/bin
 
-src/arch/arm/dts/sun55i-a527-cubie-a5e.dts:
-	ln -s sun55iw3p1-soc-system.dts $@
-
-pre_build: make_tmp_dir src/arch/arm/dts/sun55i-a527-cubie-a5e.dts
+pre_build: make_tmp_dir
 
 clean: clean_sunxi_challenge clean_scp clean_pack clean_spl clean_out
 distclean: distclean_spl
@@ -41,76 +45,171 @@ clean_sunxi_challenge:
 .PHONY: clean_scp
 clean_scp:
 	$(MAKE) -j$(shell nproc) -C arisc/ar100s clean
+	rm -f device-*/configs/*/{arisc.config,scp.bin}
 
 .PHONY: clean_pack
 clean_pack:
-	rm -f src/bl31.bin src/scp.bin src/boot_package.cfg src/boot_package.fex
+	rm -f src/bl31-*.bin src/scp-*.bin src/boot_package-*.cfg src/boot_package-*.fex
 
 .PHONY: clean_spl
 clean_spl:
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub clean
-	rm -f device-a527/configs/cubie_a5e/sys_config.bin monitor.fex
-	dos2unix device-a527/configs/cubie_a5e/sys_config.fex
+	rm -f device-*/configs/*/sys_config.bin \
+		  monitor.fex
+	for i in device-*/configs/*/sys_config.fex; do \
+		dos2unix -n $$i $$i; \
+	done
 
-.PHONY: clean_spl
+
+.PHONY: clean_out
 clean_out:
-	rm -rf out/
+	rm -rf src/sys_partition_nor.bin out/
 
 .PHONY: distclean_spl
 distclean_spl:
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) -C spl-pub distclean
 
-arisc/ar100s/scp.bin:
-	LICHEE_BOARD_CONFIG_DIR=device-a527/configs/cubie_a5e device-a527/tools/arisc_config_parse.sh
-	ln -sf ../device-a527/configs/cubie_a5e/arisc.config arisc/.config
-	$(MAKE) -j$(shell nproc) -C arisc LICHEE_DRAMLIB_PATH=../../dramlib CFG_CHIP_PLATFORM=sun55iw3p1
+#
+# BOOT0 Config
+#
 
-src/boot_package.cfg:
-	echo "[package]" > $@
-	echo "item=u-boot, u-boot-sun55iw3p1.bin" >> $@
-	echo "item=monitor, bl31.bin" >> $@
-	echo "item=scp, scp.bin" >> $@
-	echo "item=dtb, u-boot.dtb" >> $@
-
-src/boot_package.fex: $(UBOOT_PACKING_COMPONENTS)
-	cp device-a527/bin/bl31.bin arisc/ar100s/scp.bin ./src
-	cd ./src && ../tools/pack/pctools/linux/openssl/dragonsecboot -pack boot_package.cfg
-
-device-a527/configs/cubie_a5e/sys_config.bin: device-a527/configs/cubie_a5e/sys_config.fex
-	unix2dos $<
+%/sys_config.bin: %/sys_config.fex
+	unix2dos -n $< $<
 	tools/pack/pctools/linux/mod_update/script $<
 
+#
+# Closed source BOOT0
+#
+
 out/radxa-cubie-a5e/boot0_sdcard.bin: device-a527/configs/cubie_a5e/sys_config.bin
-	mkdir -p out/radxa-cubie-a5e
+	mkdir -p $(shell dirname $@)
 	cp device-a527/bin/boot0_sdcard_sun55iw3p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
 
 out/radxa-cubie-a5e/boot0_spinor.bin: device-a527/configs/cubie_a5e/sys_config.bin
-	mkdir -p out/radxa-cubie-a5e
+	mkdir -p $(shell dirname $@)
 	cp device-a527/bin/boot0_spinor_sun55iw3p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
+
+out/radxa-cubie-a7a/boot0_sdcard.bin: device-a733/configs/cubie_a7a/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_sdcard_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7a/boot0_spinor.bin: device-a733/configs/cubie_a7a/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_spinor_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7z/boot0_sdcard.bin: device-a733/configs/cubie_a7z/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_sdcard_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7z/boot0_spinor.bin: device-a733/configs/cubie_a7z/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_spinor_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+#
+# Open source BOOT0
+#
 
 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin spl-pub/nboot/boot0_spinor_sun55iw3p1.bin &: device-a527/configs/cubie_a5e/sys_config.bin
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a527
 	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin $< SDMMC_CARD
 	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_spinor_sun55iw3p1.bin $< SPINOR_FLASH
-	ln -sf device-a527/bin/bl31.bin monitor.fex
+	ln -sf device-a527/bin/bl31.bin monitor.fex	# needed for update_chip
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a527 LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_sdcard_sun55iw3p1.bin
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a527 LICHEE_TOOLS_DIR=tools awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_spinor_sun55iw3p1.bin
 
+spl-pub/nboot/boot0_sdcard_sun60iw2p1.bin: device-a733/configs/cubie_a7a/sys_config.bin
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub b=a733
+	$(MAKE) -j$(shell nproc) CROSS_COMPILE=$(CROSS_COMPILE) $(CUSTOM_MAKE_DEFINITIONS) -C spl-pub
+	tools/pack/pctools/linux/mod_update/update_boot0 spl-pub/nboot/boot0_sdcard_sun60iw2p1.bin $< SDMMC_CARD
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip spl-pub/nboot/boot0_sdcard_sun60iw2p1.bin
+
+#
+# SCP
+#
+
+%/arisc.config:
+	LICHEE_BOARD_CONFIG_DIR=$(shell dirname $@) $(shell dirname $@)/../../tools/arisc_config_parse.sh
+
+%/scp.bin: %/arisc.config
+	rm -f arisc/ar100s/.config
+	ln -sf ../$< arisc/.config
+	$(MAKE) -j$(shell nproc) -C arisc LICHEE_DRAMLIB_PATH=../../dramlib CFG_CHIP_PLATFORM=$(shell . $< && echo $${LICHEE_ARISC_DEFCONFIG%_*})
+	mv arisc/ar100s/scp.bin $@
+
+#
+# U-Boot Proper
+#
+
+src/bl31-%.bin: device-%/bin/bl31.bin
+	cp $< $@
+
+.SECONDEXPANSION:
+src/scp-%.bin: device-$$(word 1,$$(subst -, ,$$*))/configs/$$(word 2,$$(subst -, ,$$*))/scp.bin
+	cp $< $@
+
+src/boot_package-%.fex: src/boot_package-%.cfg
+	cd ./src && ../tools/pack/pctools/linux/openssl/dragonsecboot -pack $(shell basename $<)
+	mv src/boot_package.fex $@
+
+src/boot_package-radxa-cubie-a5e.cfg: src/bl31-a527.bin \
+									  src/u-boot-sun55iw3p1.bin \
+									  src/u-boot.dtb \
+									  src/scp-a527-cubie_a5e.bin
+	echo "[package]" > $@
+	echo "item=u-boot, u-boot-sun55iw3p1.bin" >> $@
+	echo "item=monitor, bl31-a527.bin" >> $@
+	echo "item=scp, scp-a527-cubie_a5e.bin" >> $@
+	echo "item=dtb, u-boot.dtb" >> $@
+
+src/boot_package-radxa-cubie-a7a.cfg: src/bl31-a733.bin \
+									  src/u-boot-sun60iw2p1.bin \
+									  src/scp-a733-cubie_a7a.bin
+	echo "[package]" > $@
+	echo "item=u-boot, u-boot-sun60iw2p1.bin" >> $@
+	echo "item=monitor, bl31-a733.bin" >> $@
+	echo "item=scp, scp-a733-cubie_a7a.bin" >> $@
+
+src/boot_package-radxa-cubie-a7z.cfg: src/bl31-a733.bin \
+									  src/u-boot-sun60iw2p1.bin \
+									  src/scp-a733-cubie_a7z.bin
+	echo "[package]" > $@
+	echo "item=u-boot, u-boot-sun60iw2p1.bin" >> $@
+	echo "item=monitor, bl31-a733.bin" >> $@
+	echo "item=scp, scp-a733-cubie_a7z.bin" >> $@
+
+#
+# Misc
+#
+
 # Placeholder to suppress boot warnings
 # Does not work with `env save`
-out/radxa-cubie-a5e/sys_partition_nor.bin:
-	mkdir -p out/radxa-cubie-a5e
+src/sys_partition_nor.bin:
 	truncate -s 16M /tmp/gpt.img
 	sgdisk -o -n 1:-128K:0 -c 1:env /tmp/gpt.img
 	dd conv=notrunc,fsync if=/tmp/gpt.img of=$@ bs=512 count=34
-
-.PHONY: a527_pack
-a527_pack: src/boot_package.fex
 
 #
 # Device build targets
@@ -118,20 +217,66 @@ a527_pack: src/boot_package.fex
 
 .PHONY: radxa-cubie-a5e_defconfig
 radxa-cubie-a5e_defconfig: clean_config
-	$(UMAKE) sun55iw3p1_defconfig radxa.config
+	$(UMAKE) $@
 
 .PHONY: radxa-cubie-a5e_build
 radxa-cubie-a5e_build: radxa-cubie-a5e_defconfig clean_sunxi_challenge
 	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device-a527/configs/cubie_a5e all
 
 .PHONY: radxa-cubie-a5e_pack
-radxa-cubie-a5e_pack: radxa-cubie-a5e_build a527_pack
+radxa-cubie-a5e_pack: radxa-cubie-a5e_build src/boot_package-radxa-cubie-a5e.fex
 
 .PHONY: radxa-cubie-a5e
 radxa-cubie-a5e: radxa-cubie-a5e_pack \
 				 out/radxa-cubie-a5e/boot0_sdcard.bin \
 				 out/radxa-cubie-a5e/boot0_spinor.bin \
-				 out/radxa-cubie-a5e/sys_partition_nor.bin
-	cp src/boot_package.fex out/$@/
+				 src/sys_partition_nor.bin
+	mkdir -p out/$@
+	cp src/sys_partition_nor.bin out/$@
+	cp src/boot_package-radxa-cubie-a5e.fex out/$@/boot_package.fex
+	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1
+
+.PHONY: radxa-cubie-a7a_defconfig
+radxa-cubie-a7a_defconfig: clean_config
+	$(UMAKE) $@
+
+.PHONY: radxa-cubie-a7a_build
+radxa-cubie-a7a_build: radxa-cubie-a7a_defconfig clean_sunxi_challenge
+	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device-a733/configs/cubie_a7a all
+
+.PHONY: radxa-cubie-a7a_pack
+radxa-cubie-a7a_pack: radxa-cubie-a7a_build src/boot_package-radxa-cubie-a7a.fex
+
+.PHONY: radxa-cubie-a7a
+radxa-cubie-a7a: radxa-cubie-a7a_pack \
+				 out/radxa-cubie-a7a/boot0_sdcard.bin \
+				 out/radxa-cubie-a7a/boot0_spinor.bin \
+				 src/sys_partition_nor.bin
+	mkdir -p out/$@
+	cp src/sys_partition_nor.bin out/$@
+	cp src/boot_package-radxa-cubie-a7a.fex out/$@/boot_package.fex
+	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1
+
+.PHONY: radxa-cubie-a7z_defconfig
+radxa-cubie-a7z_defconfig: clean_config
+	$(UMAKE) $@
+
+.PHONY: radxa-cubie-a7z_build
+radxa-cubie-a7z_build: radxa-cubie-a7z_defconfig clean_sunxi_challenge
+	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device-a733/configs/cubie_a7z all
+
+.PHONY: radxa-cubie-a7z_pack
+radxa-cubie-a7z_pack: radxa-cubie-a7z_build src/boot_package-radxa-cubie-a7z.fex
+
+.PHONY: radxa-cubie-a7z
+radxa-cubie-a7z: radxa-cubie-a7z_pack \
+				 out/radxa-cubie-a7z/boot0_sdcard.bin \
+				 out/radxa-cubie-a7z/boot0_spinor.bin \
+				 src/sys_partition_nor.bin
+	mkdir -p out/$@
+	cp src/sys_partition_nor.bin out/$@
+	cp src/boot_package-radxa-cubie-a7z.fex out/$@/boot_package.fex
 	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
 	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1
