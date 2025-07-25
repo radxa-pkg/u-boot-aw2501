@@ -1,3 +1,24 @@
+u-boot-aw2501 (2018.07-3) unstable; urgency=medium
+
+  [ Feng Zhang ]
+  * feat: use prebuilt allwinner boot0 firmware
+  * fix: update Makefile.local
+
+  [ ZHANG Yuntian ]
+  * fix: remove out dir before build
+  * refactor: update boot0 in final destination
+  * feat: support SPI boot
+  * feat: support building SPI image under Windows
+  * refactor: prepare for new SoC support
+  * fix: remove SoC suffix
+  * feat: allow testing setup.ps1 on Linux
+  * fix: remove unused build dependencies
+  * fix: update path for self-built boot0
+  * feat: support Cubie A7A and A7Z
+  * fix: GitHub Workflow compatible toolchain setup
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Fri, 25 Jul 2025 10:53:18 +0000
+
 u-boot-aw2501 (2018.07-2) unstable; urgency=medium
 
   [ ZHANG Yuntian ]
