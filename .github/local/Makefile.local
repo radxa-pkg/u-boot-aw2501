@@ -1,4 +1,4 @@
-CROSS_COMPILE := ../gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-
+CROSS_COMPILE := $(CURDIR)/toolchains/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-
 CUSTOM_MAKE_DEFINITIONS := DTS_PATH=arch/arm/dts \
 	LICHEE_CHIP_CONFIG_DIR=/tmp \
 	LICHEE_PLAT_OUT=/tmp \
@@ -15,15 +15,16 @@ UBOOT_PRODUCTS := radxa-cubie-a5e \
 				  radxa-cubie-a7a \
 				  radxa-cubie-a7z
 
-devcontainer_setup: download_toolchain
+devcontainer_setup: install_toolchain
 
-.PHONY: download_toolchain
-download_toolchain:
-	mkdir -p arisc/ar100s/tools/riscv64-elf-x86_64-20201104
-	wget "https://github.com/radxa/allwinner-toolchain/releases/download/aiot-linux-v1.4.6/riscv64-elf-x86_64-20201104.tar.gz"
-	tar xavf riscv64-elf-x86_64-20201104.tar.gz -C arisc/ar100s/tools/riscv64-elf-x86_64-20201104
-	wget "https://github.com/radxa/allwinner-toolchain/releases/download/aiot-linux-v1.4.6/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz"
-	tar xavf gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
+%.tar.gz %.tar.xz:
+	mkdir -p $(shell dirname $@)
+	wget -O $@ "https://github.com/radxa/allwinner-toolchain/releases/download/aiot-linux-v1.4.6/$(shell basename $@)"
+
+.PHONY: install_toolchain
+install_toolchain: arisc/ar100s/tools/riscv64-elf-x86_64-20201104.tar.gz toolchains/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
+	rm -rf toolchains/*/
+	tar xavf toolchains/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz -C toolchains
 
 #
 # Common supporting targets
