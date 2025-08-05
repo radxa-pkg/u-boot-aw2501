@@ -1,3 +1,14 @@
+u-boot-aw2501 (2018.07-5) unstable; urgency=medium
+
+  [ ZHANG Yuntian ]
+  * fix: reduce SPI image size to 8M
+  * fix: add A733 setup scripts
+
+  [ github-actions[bot] ]
+  * chore: update submodules
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Tue, 05 Aug 2025 10:15:28 +0000
+
 u-boot-aw2501 (2018.07-4) unstable; urgency=medium
 
   [ github-actions[bot] ]
