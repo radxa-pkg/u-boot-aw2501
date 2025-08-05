@@ -29,7 +29,7 @@ Function BuildSPINOR{
 	$input.CopyTo($output)
 	$input.Close()
 
-	$output.SetLength(16MB)
+	$output.SetLength(8MB)
 	$output.Close()
     Write-Host "SPI U-Boot has been created as spi.img under the current directory."
 }

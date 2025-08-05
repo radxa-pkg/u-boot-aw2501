@@ -12,7 +12,7 @@ fi
 
 build_spinor() {
 	rm -f /tmp/spi.img /tmp/gpt.img
-	truncate -s 16M /tmp/spi.img
+	truncate -s 8M /tmp/spi.img
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot0_spinor.bin" of=/tmp/spi.img bs=512
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/boot_package.fex" of=/tmp/spi.img bs=512 seek=128
 	dd conv=notrunc,fsync if="$SCRIPT_DIR/sys_partition_nor.bin" of=/tmp/spi.img bs=512 seek=2016
