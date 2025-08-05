@@ -78,6 +78,10 @@ distclean_spl:
 	unix2dos -n $< $<
 	tools/pack/pctools/linux/mod_update/script $<
 
+%/sys_partition_nor.bin: %/sys_partition_nor.fex
+	unix2dos -n $< $<
+	tools/pack/pctools/linux/mod_update/script $<
+
 #
 # Closed source BOOT0
 #
@@ -257,8 +261,8 @@ radxa-cubie-a7a: radxa-cubie-a7a_pack \
 	mkdir -p out/$@
 	cp src/sys_partition_nor.bin out/$@
 	cp src/boot_package-radxa-cubie-a7a.fex out/$@/boot_package.fex
-	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
-	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1
+	cp setup/u-boot_setup-allwinner-a733.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner-a733.ps1 out/$@/setup.ps1
 
 .PHONY: radxa-cubie-a7z_defconfig
 radxa-cubie-a7z_defconfig: clean_config
@@ -279,5 +283,5 @@ radxa-cubie-a7z: radxa-cubie-a7z_pack \
 	mkdir -p out/$@
 	cp src/sys_partition_nor.bin out/$@
 	cp src/boot_package-radxa-cubie-a7z.fex out/$@/boot_package.fex
-	cp setup/u-boot_setup-allwinner.sh out/$@/setup.sh
-	cp setup/u-boot_setup-allwinner.ps1 out/$@/setup.ps1
+	cp setup/u-boot_setup-allwinner-a733.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner-a733.ps1 out/$@/setup.ps1
