@@ -25,6 +25,8 @@ devcontainer_setup: install_toolchain
 install_toolchain: arisc/ar100s/tools/riscv64-elf-x86_64-20201104.tar.gz toolchains/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
 	rm -rf toolchains/*/
 	tar xavf toolchains/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz -C toolchains
+	sudo apt-get update
+	sudo apt-get install -y crossbuild-essential-armel
 
 #
 # Common supporting targets
