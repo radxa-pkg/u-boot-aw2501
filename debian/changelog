@@ -1,3 +1,13 @@
+u-boot-aw2501 (2018.07-8) unstable; urgency=medium
+
+  [ Feng Zhang ]
+  * feat: a733: add ufs boot0 build support
+
+  [ github-actions[bot] ]
+  * chore: update submodules
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Sun, 24 Aug 2025 12:29:38 +0000
+
 u-boot-aw2501 (2018.07-7) unstable; urgency=medium
 
   [ github-actions[bot] ]
