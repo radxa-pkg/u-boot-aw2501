@@ -106,6 +106,14 @@ out/radxa-cubie-a7a/boot0_sdcard.bin: device-a733/configs/cubie_a7a/sys_config.b
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip $@
 
+out/radxa-cubie-a7a/boot0_ufs.bin: device-a733/configs/cubie_a7a/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_ufs_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< UFS
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
 out/radxa-cubie-a7a/boot0_spinor.bin: device-a733/configs/cubie_a7a/sys_config.bin
 	mkdir -p $(shell dirname $@)
 	cp device-a733/bin/boot0_spinor_sun60iw2p1.bin $@
@@ -118,6 +126,14 @@ out/radxa-cubie-a7z/boot0_sdcard.bin: device-a733/configs/cubie_a7z/sys_config.b
 	mkdir -p $(shell dirname $@)
 	cp device-a733/bin/boot0_sdcard_sun60iw2p1.bin $@
 	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7z/boot0_ufs.bin: device-a733/configs/cubie_a7z/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_ufs_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< UFS
 	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip $@
@@ -258,6 +274,7 @@ radxa-cubie-a7a_pack: radxa-cubie-a7a_build src/boot_package-radxa-cubie-a7a.fex
 .PHONY: radxa-cubie-a7a
 radxa-cubie-a7a: radxa-cubie-a7a_pack \
 				 out/radxa-cubie-a7a/boot0_sdcard.bin \
+				 out/radxa-cubie-a7a/boot0_ufs.bin \
 				 out/radxa-cubie-a7a/boot0_spinor.bin \
 				 src/sys_partition_nor.bin
 	mkdir -p out/$@
@@ -280,6 +297,7 @@ radxa-cubie-a7z_pack: radxa-cubie-a7z_build src/boot_package-radxa-cubie-a7z.fex
 .PHONY: radxa-cubie-a7z
 radxa-cubie-a7z: radxa-cubie-a7z_pack \
 				 out/radxa-cubie-a7z/boot0_sdcard.bin \
+				 out/radxa-cubie-a7z/boot0_ufs.bin \
 				 out/radxa-cubie-a7z/boot0_spinor.bin \
 				 src/sys_partition_nor.bin
 	mkdir -p out/$@
