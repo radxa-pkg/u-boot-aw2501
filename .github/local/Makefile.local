@@ -13,6 +13,7 @@ CUSTOM_DEBUILD_ENV := DEB_BUILD_OPTIONS='parallel=1' DEB_CFLAGS_MAINT_SET= DEB_L
 
 UBOOT_PRODUCTS := radxa-cubie-a5e \
 				  radxa-cubie-a7a \
+				  radxa-cubie-a7s \
 				  radxa-cubie-a7z
 
 devcontainer_setup: install_toolchain
@@ -122,6 +123,30 @@ out/radxa-cubie-a7a/boot0_spinor.bin: device-a733/configs/cubie_a7a/sys_config.b
 	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
 	tools/pack/pctools/linux/mod_update/update_chip $@
 
+out/radxa-cubie-a7s/boot0_sdcard.bin: device-a733/configs/cubie_a7s/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_sdcard_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SDMMC_CARD
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7s/boot0_ufs.bin: device-a733/configs/cubie_a7s/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_ufs_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< UFS
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
+out/radxa-cubie-a7s/boot0_spinor.bin: device-a733/configs/cubie_a7s/sys_config.bin
+	mkdir -p $(shell dirname $@)
+	cp device-a733/bin/boot0_spinor_sun60iw2p1.bin $@
+	tools/pack/pctools/linux/mod_update/update_boot0 $@ $< SPINOR_FLASH
+	ln -sf device-a733/bin/bl31.bin monitor.fex	# needed for update_chip
+	LICHEE_OUT_DIR=$$(LICHEE_CHIP_CONFIG_DIR=device-a733 LICHEE_TOOLS_DIR=tools LICHEE_CHIP=sun60iw2p1 LICHEE_IC=a733 awbs/awbs)/out \
+	tools/pack/pctools/linux/mod_update/update_chip $@
+
 out/radxa-cubie-a7z/boot0_sdcard.bin: device-a733/configs/cubie_a7z/sys_config.bin
 	mkdir -p $(shell dirname $@)
 	cp device-a733/bin/boot0_sdcard_sun60iw2p1.bin $@
@@ -215,6 +240,14 @@ src/boot_package-radxa-cubie-a7a.cfg: src/bl31-a733.bin \
 	echo "item=monitor, bl31-a733.bin" >> $@
 	echo "item=scp, scp-a733-cubie_a7a.bin" >> $@
 
+src/boot_package-radxa-cubie-a7s.cfg: src/bl31-a733.bin \
+									  src/u-boot-sun60iw2p1.bin \
+									  src/scp-a733-cubie_a7s.bin
+	echo "[package]" > $@
+	echo "item=u-boot, u-boot-sun60iw2p1.bin" >> $@
+	echo "item=monitor, bl31-a733.bin" >> $@
+	echo "item=scp, scp-a733-cubie_a7s.bin" >> $@
+
 src/boot_package-radxa-cubie-a7z.cfg: src/bl31-a733.bin \
 									  src/u-boot-sun60iw2p1.bin \
 									  src/scp-a733-cubie_a7z.bin
@@ -280,6 +313,29 @@ radxa-cubie-a7a: radxa-cubie-a7a_pack \
 	mkdir -p out/$@
 	cp src/sys_partition_nor.bin out/$@
 	cp src/boot_package-radxa-cubie-a7a.fex out/$@/boot_package.fex
+	cp setup/u-boot_setup-allwinner-a733.sh out/$@/setup.sh
+	cp setup/u-boot_setup-allwinner-a733.ps1 out/$@/setup.ps1
+
+.PHONY: radxa-cubie-a7s_defconfig
+radxa-cubie-a7s_defconfig: clean_config
+	$(UMAKE) $@
+
+.PHONY: radxa-cubie-a7s_build
+radxa-cubie-a7s_build: radxa-cubie-a7s_defconfig clean_sunxi_challenge
+	$(UMAKE) LICHEE_BOARD_CONFIG_DIR=$(CURDIR)/device-a733/configs/cubie_a7s all
+
+.PHONY: radxa-cubie-a7s_pack
+radxa-cubie-a7s_pack: radxa-cubie-a7s_build src/boot_package-radxa-cubie-a7s.fex
+
+.PHONY: radxa-cubie-a7s
+radxa-cubie-a7s: radxa-cubie-a7s_pack \
+				 out/radxa-cubie-a7s/boot0_sdcard.bin \
+				 out/radxa-cubie-a7s/boot0_ufs.bin \
+				 out/radxa-cubie-a7s/boot0_spinor.bin \
+				 src/sys_partition_nor.bin
+	mkdir -p out/$@
+	cp src/sys_partition_nor.bin out/$@
+	cp src/boot_package-radxa-cubie-a7s.fex out/$@/boot_package.fex
 	cp setup/u-boot_setup-allwinner-a733.sh out/$@/setup.sh
 	cp setup/u-boot_setup-allwinner-a733.ps1 out/$@/setup.ps1
 
