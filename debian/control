@@ -36,7 +36,7 @@ Depends: u-boot-aw2501,
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for Radxa Cubie A5E.
+Description: Radxa U-Boot meta-package for Radxa Cubie A5E
  This package provides the prebuilt U-Boot for Radxa Cubie A5E.
 
 Package: u-boot-radxa-cubie-a7a
@@ -45,7 +45,7 @@ Depends: u-boot-aw2501,
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for Radxa Cubie A7A.
+Description: Radxa U-Boot meta-package for Radxa Cubie A7A
  This package provides the prebuilt U-Boot for Radxa Cubie A7A.
 
 Package: u-boot-radxa-cubie-a7s
@@ -54,7 +54,7 @@ Depends: u-boot-aw2501,
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for Radxa Cubie A7S.
+Description: Radxa U-Boot meta-package for Radxa Cubie A7S
  This package provides the prebuilt U-Boot for Radxa Cubie A7S.
 
 Package: u-boot-radxa-cubie-a7z
@@ -63,5 +63,5 @@ Depends: u-boot-aw2501,
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for Radxa Cubie A7Z.
+Description: Radxa U-Boot meta-package for Radxa Cubie A7Z
  This package provides the prebuilt U-Boot for Radxa Cubie A7Z.
