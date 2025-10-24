@@ -56,3 +56,12 @@ Section: admin
 Priority: optional
 Description: Radxa U-Boot meta-package for Radxa Cubie A7Z.
  This package provides the prebuilt U-Boot for Radxa Cubie A7Z.
+
+Package: u-boot-radxa-a733
+Architecture: all
+Depends: u-boot-aw2501,
+         ${misc:Depends},
+Section: admin
+Priority: optional
+Description: Radxa U-Boot meta-package for Radxa A733.
+ This package provides the prebuilt U-Boot for Radxa A733.
