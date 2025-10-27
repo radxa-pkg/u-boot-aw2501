@@ -1,3 +1,14 @@
+u-boot-aw2501 (2018.07-10) unstable; urgency=medium
+
+  [ Feng Zhang ]
+  * feat: add meta-package for radxa-a733
+  * feat: make radxa-a733 link to radxa-cubie-a7a
+
+  [ github-actions[bot] ]
+  * chore: update submodules
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Mon, 27 Oct 2025 02:26:17 +0000
+
 u-boot-aw2501 (2018.07-9) unstable; urgency=medium
 
   [ github-actions[bot] ]
