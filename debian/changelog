@@ -1,3 +1,10 @@
+u-boot-aw2501 (2018.07-11) unstable; urgency=medium
+
+  [ github-actions[bot] ]
+  * chore: update submodules
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Tue, 09 Dec 2025 06:21:04 +0000
+
 u-boot-aw2501 (2018.07-10) unstable; urgency=medium
 
   [ Feng Zhang ]
