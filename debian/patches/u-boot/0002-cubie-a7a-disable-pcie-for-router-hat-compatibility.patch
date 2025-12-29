@@ -1,0 +1,26 @@
+Description: Disable PCIe in U-Boot for Cubie A7A Router HAT compatibility
+ The Radxa Cubie A7A hangs during U-Boot when the Radxa Dual 2.5G Router HAT
+ is attached. The hang occurs after "pcie link up success" message during
+ ASM2806 PCIe switch enumeration.
+ .
+ This patch disables PCIe in U-Boot's device tree for the Cubie A7A board.
+ U-Boot doesn't need PCIe functionality for booting, and the Linux kernel
+ will re-initialize PCIe after boot with proper quirks for the ASM2806 switch.
+ .
+ Hardware affected:
+  - Board: Radxa Cubie A7A (Allwinner A733)
+  - HAT: Radxa Dual 2.5G Router HAT (ASMedia ASM2806 + 2x RTL8125B)
+--- a/device-a733/configs/cubie_a7a/uboot-board.dts
++++ b/device-a733/configs/cubie_a7a/uboot-board.dts
+@@ -857,7 +857,8 @@
+ };
+
+ &pcie_rc {
+-	status = "okay";
+-	pcie1v8-supply = <&reg_bldo1>;
+-	pcie3v3-supply = <&reg_dcdc1>;
++	/* Disabled to prevent U-Boot hang with Radxa Dual 2.5G Router HAT (ASM2806 PCIe switch).
++	 * Linux kernel will re-initialize PCIe after boot with proper quirks.
++	 */
++	status = "disabled";
+ };

@@ -1,1 +1,2 @@
 u-boot/0001-fix-disable-Allwinner-cross-toolchain.patch
+u-boot/0002-cubie-a7a-disable-pcie-for-router-hat-compatibility.patch
