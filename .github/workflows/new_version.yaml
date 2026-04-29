@@ -40,6 +40,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           make dch
+          echo "::group::debian/changelog"
+          cat debian/changelog
+          echo "::endgroup::"
           make test deb
     - if: "github.event.inputs.release == 'true'"
       name: "Push"
