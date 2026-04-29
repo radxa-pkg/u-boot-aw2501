@@ -1,3 +1,14 @@
+u-boot-aw2501 (2018.07-16) unstable; urgency=medium
+
+  [ dependabot[bot] ]
+  * chore(deps): bump dependabot/fetch-metadata from 2 to 3
+  * chore(deps): bump softprops/action-gh-release from 2 to 3
+
+  [ ZHANG Yuntian ]
+  * Log debian/changelog in new_version workflow
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Wed, 29 Apr 2026 10:52:22 +0000
+
 u-boot-aw2501 (2018.07-15) unstable; urgency=medium
 
   [ github-actions[bot] ]
